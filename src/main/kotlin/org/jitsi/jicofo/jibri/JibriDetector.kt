@@ -28,11 +28,15 @@ import org.json.simple.JSONObject
 import org.jxmpp.jid.EntityBareJid
 import org.jxmpp.jid.EntityFullJid
 import org.jxmpp.jid.Jid
+
 import java.time.Clock
 import java.time.Duration
 import java.time.Instant
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.Executors
+import java.util.*
+import java.util.function.Predicate
+import java.util.stream.Collectors
 
 /**
  * <tt>JibriDetector</tt> manages the pool of Jibri instances by joining a "brewery" room where Jibris connect to and
@@ -67,15 +71,28 @@ class JibriDetector(
      * @return the XMPP address of the selected instance.
      */
     fun selectJibri(): Jid? {
-        val now = clock.instant()
-        val oldest = jibriInstances.values.filter {
-            it.reportsAvailable && Duration.between(it.lastSelected, now) >= SELECT_TIMEOUT
-        }.minByOrNull { it.lastFailed } ?: return null
 
-        return if (Duration.between(oldest.lastFailed, now) >= FAILURE_TIMEOUT) {
-            oldest.lastSelected = now
-            oldest.jid
-        } else null
+         val rand = Random()
+        val filterInstances = instances.stream().filter(Predicate { jibri: BrewInstance -> jibri.status.isAvailable() })
+                .collect(Collectors.toList())
+
+        if ((filterInstances != null) && (filterInstances.size > 0))
+        {
+            return filterInstances.get(rand.nextInt(filterInstances.size)).jid;
+        }
+        else
+        {
+            return null;
+        }
+        // val now = clock.instant()
+        // val oldest = jibriInstances.values.filter {
+        //     it.reportsAvailable && Duration.between(it.lastSelected, now) >= SELECT_TIMEOUT
+        // }.minByOrNull { it.lastFailed } ?: return null
+
+        // return if (Duration.between(oldest.lastFailed, now) >= FAILURE_TIMEOUT) {
+        //     oldest.lastSelected = now
+        //     oldest.jid
+        // } else null
     }
 
     /**

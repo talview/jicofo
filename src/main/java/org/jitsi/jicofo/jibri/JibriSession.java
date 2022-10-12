@@ -645,16 +645,16 @@ public class JibriSession
         // Jibri to keep things going
         if (failureReason != null)
         {
-            boolean shouldRetry;
-            if (shouldRetryParam == null)
-            {
-                logger.warn("failureReason was non-null but shouldRetry wasn't set, will NOT retry");
-                shouldRetry = false;
-            }
-            else
-            {
-                shouldRetry = shouldRetryParam;
-            }
+            boolean shouldRetry=true;
+            // if (shouldRetryParam == null)
+            // {
+            //     logger.warn("failureReason was non-null but shouldRetry wasn't set, will NOT retry");
+            //     shouldRetry = false;
+            // }
+            // else
+            // {
+            //     shouldRetry = shouldRetryParam;
+            // }
             // There was an error with the current Jibri, see if we should retry
             if (shouldRetry && !maxRetriesExceeded())
             {
