@@ -646,6 +646,13 @@ public class JibriSession
         if (failureReason != null)
         {
             boolean shouldRetry=true;
+            /*
+             * We have observed a behavior in the past that the recorder returns shouldRetry as false
+             * when there are no media received in the required time 30-sec wait time.  In some other
+             * cases also this shouldRetry was been sent as false. After removing  this check we have
+             * observed less occurrence of recording loss.
+             */
+
             // if (shouldRetryParam == null)
             // {
             //     logger.warn("failureReason was non-null but shouldRetry wasn't set, will NOT retry");
