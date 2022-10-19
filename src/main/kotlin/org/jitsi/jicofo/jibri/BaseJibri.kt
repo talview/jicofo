@@ -160,11 +160,15 @@ abstract class BaseJibri internal constructor(
         if (iq.action == Action.UNDEFINED) {
             return error(iq, StanzaError.Condition.bad_request, "undefined action")
         }
-
-        verifyModeratorRole(iq)?.let {
-            logger.warn("Ignored Jibri request from non-moderator.")
-            return IQ.createErrorResponse(iq, it)
-        }
+    /**
+    * In GDPR compliance, we have a scenario in case a moderator's recording started due to any unforeseen 
+    * situation candidate should be able to stop recording. In such case candidates who don’t have moderator,
+    * permission should be able to stop recording.
+    */
+        // verifyModeratorRole(iq)?.let {
+        //     logger.warn("Ignored Jibri request from non-moderator.")
+        //     return IQ.createErrorResponse(iq, it)
+        // }
 
         return when {
             iq.action == Action.START && session == null -> handleStartRequest(iq)
